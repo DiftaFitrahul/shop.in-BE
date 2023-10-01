@@ -2,7 +2,7 @@ const {Sequelize, DataTypes} = require('sequelize')
 const  sequelize = require("../utils/database")
 
 const Supplier = sequelize.define('Supplier', {
-    supplierId : {
+    id : {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,

@@ -3,7 +3,7 @@ const  sequelize = require("../utils/database")
 
 
 const Customer = sequelize.define('Customer', {
-    userId: {
+    id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4, 
         allowNull : false,
