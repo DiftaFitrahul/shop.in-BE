@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const sequelize = require('./util/database')
+const sequelize = require('./src/utils/database')
 
 const app = express();
 
