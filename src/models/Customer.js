@@ -26,6 +26,9 @@ const Customer = sequelize.define('Customer', {
         allowNull : false
     },
     address: DataTypes.STRING,
-    photo_profile : DataTypes.STRING 
+    photo_profile : DataTypes.STRING,
+    status: DataTypes.STRING
 
 })
+
+module.exports = Customer;
