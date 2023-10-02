@@ -32,8 +32,8 @@ Product.belongsTo(Supplier, { constraints: true, onDelete: 'CASCADE' });
 Supplier.hasMany(Product);
 
 sequelize
-.sync({ force: true })
-// .sync()
+// .sync({ force: true })
+.sync()
 .then(async()=>{
     console.log('succes connect to postgresql database')
     app.listen(5000, ()=>{

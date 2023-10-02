@@ -69,6 +69,7 @@ exports.addProducts = (req, res) =>{
             })
         }
         
+        
         Product.create({
             name: name,
             price: price,
@@ -77,10 +78,53 @@ exports.addProducts = (req, res) =>{
             SupplierId: supplierId
         }).then(result=>{
             console.log(JSON.stringify(result));
-            return res.status(201).json({message: 'Success add product'})
+            return res.status(201).json({message: 'Success add product', data: JSON.stringify(result)})
         }).catch(err=>{
             return res.status(500).json({err: 'Error occured while adding product'})
-        }).catch(err=> res.status(500).json({err : 'Error occured when adding product'}))
-    })
+        })
+    }).catch(err=> res.status(500).json({err : 'Error occured when adding product'}))
+
+}
+
+exports.editProduct = (req, res) =>{
+    const {productId, supplierId} = req.query;
+    console.log(productId, supplierId)
+
+    const allowedFields = [
+        "name",
+        "price",
+        "quantity",
+        "description",
+        "imageUrl",
+    ];
+
+    const updatedFields = {};
+
+    for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+            updatedFields[field] = req.body[field];
+        }
+    }
+
+    if (Object.keys(updatedFields).length === 0) {
+        return res
+            .status(400)
+            .json({ message: "No valid fields provided for update!" });
+    }
+
+    
+        Product.update(updatedFields, {where: {
+            id : `${productId}`,
+            SupplierId : `${supplierId}`
+        }}).then(result=>{
+            console.log(JSON.stringify(result));
+            return res.status(201).json({message: 'Success add product', data: JSON.stringify(result)})
+        }).catch(err=>{
+            console.log(err)
+            return res.status(500).json({err: 'Error occured while adding product'})
+        })
+    
+    
+
 
 }
