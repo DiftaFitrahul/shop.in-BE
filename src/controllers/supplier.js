@@ -1,7 +1,7 @@
 const Supplier = require('../models/Supplier')
 const Product = require('../models/Product')
 
-exports.registerSupplier = (req, res) =>{
+exports.registerSupplier = async(req, res) =>{
     
     if (
         !req.body.name ||
@@ -16,7 +16,7 @@ exports.registerSupplier = (req, res) =>{
     const {name, email, password } = req.body;
 
 
-    Supplier.findOne({where : {email : email}})
+    await Supplier.findOne({where : {email : email}})
         .then(supplier=>{
             if(supplier && supplier.email === email){
                 return res.status(409).json({
@@ -43,7 +43,7 @@ exports.registerSupplier = (req, res) =>{
     })
 }
 
-exports.addProducts = (req, res) =>{
+exports.addProducts =async (req, res) =>{
     if (
         !req.body.name ||
         !req.body.price ||
@@ -59,10 +59,10 @@ exports.addProducts = (req, res) =>{
 
     const{ name, price, quantity, description , supplierId} = req.body;
 
-    Product.findOne({where: {
+    await Product.findOne({where: {
         name: name,
         SupplierId: supplierId
-      }}).then(result =>{
+      }}).then(async result =>{
         if(result && result.name === name && result.SupplierId === supplierId){
             return res.status(409).json({
                 message: 'Product already existed'
@@ -70,7 +70,7 @@ exports.addProducts = (req, res) =>{
         }
         
         
-        Product.create({
+       await Product.create({
             name: name,
             price: price,
             quantity: quantity,
@@ -78,7 +78,7 @@ exports.addProducts = (req, res) =>{
             SupplierId: supplierId
         }).then(result=>{
             console.log(JSON.stringify(result));
-            return res.status(201).json({message: 'Success add product', data: JSON.stringify(result)})
+            return res.status(201).json({message: 'Success add product', data: result.toJSON()})
         }).catch(err=>{
             return res.status(500).json({err: 'Error occured while adding product'})
         })
@@ -86,7 +86,7 @@ exports.addProducts = (req, res) =>{
 
 }
 
-exports.editProduct = (req, res) =>{
+exports.editProduct = async (req, res) =>{
     const {productId, supplierId} = req.query;
     console.log(productId, supplierId)
 
@@ -113,18 +113,30 @@ exports.editProduct = (req, res) =>{
     }
 
     
-        Product.update(updatedFields, {where: {
+       await Product.update(updatedFields, {where: {
             id : `${productId}`,
             SupplierId : `${supplierId}`
-        }}).then(result=>{
-            console.log(JSON.stringify(result));
-            return res.status(201).json({message: 'Success add product', data: JSON.stringify(result)})
+        },
+        returning: true,
+        
+    }).then(result=>{
+            return res.status(201).json({message: 'Success add product', data : result[1]})
         }).catch(err=>{
             console.log(err)
             return res.status(500).json({err: 'Error occured while adding product'})
         })
-    
-    
+}
 
+exports.deleteProduct = async  (req, res)=>{
+    const {id} = req.params;
 
+   await Product.destroy({where: {
+        id: id
+    }})
+    .then(
+        result => res.status(200).json({message : 'Succes delete product'})
+    )
+    .catch(
+        err=> res.status(500).json({err: 'Error when deleting product'})
+    )
 }
